@@ -7,7 +7,9 @@ The version of Holochain that will currently work with everything here, is the b
 Then, run `node simulation.js`
 
 Optionally, you can give it an argument, with the number of Conductors to start, like:
-`node simulation.js 4`
+```
+node simulation.js 4
+```
 
 ## Current Status: Zome error in App Spec
 
