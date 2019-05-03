@@ -64,6 +64,10 @@ const spawnConductors = (numberOfConductors) => new Promise(resolve => {
     handle.stdout.on('data', data => {
       const line = data.toString('utf8')
       console.log(`[C${i}]`, line)
+      // wait for the logs to convey that the interfaces have started
+      // because the consumer of this function needs those interfaces
+      // to be started so that it can initiate, and form,
+      // the websocket connections
       if (line.indexOf('Starting interfaces...') >= 0) {
         starts += 1
         if (starts === numberOfConductors) {

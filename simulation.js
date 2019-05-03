@@ -27,7 +27,7 @@ class ConductorHandle {
       console.info("Starting initialization...")
 
       connect(`ws://localhost:${this.adminPort}`).then(async ({ call, close, ws }) => {
-        console.log('we connected to admin socket')
+        console.log('connection opened to admin websocket')
         this.callAdmin = call
         this.adminWs = ws
         console.info("Creating agent...")
@@ -124,10 +124,7 @@ class ConductorCluster {
   }
 }
 
-const actualConsumerTestCode = async () => {
-  const numConductors = 5
-  const dnaPath = './app_spec.dna.json'
-  const instanceId = 'app-spec'
+const actualConsumerTestCode = async (numConductors = 2, dnaPath = './app_spec.dna.json', instanceId = 'app-spec') => {
   const cluster = new ConductorCluster(numConductors)
 
   await cluster.initialize()
@@ -139,10 +136,11 @@ const actualConsumerTestCode = async () => {
   console.log('created DNA instances')
 
   // log all signals for all conductors
-  cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, signal)))
+  cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
 
   await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
-    content: 'hi'
+    content: 'hi',
+    in_reply_to: null,
   })
 
   
@@ -154,8 +152,10 @@ const actualConsumerTestCode = async () => {
   // t.ok(results.every(result => result.Ok.items.length === num))
 }
 
+const optionalNumber = process.argv[2]
+const optionalDnaPath = process.argv[3]
 try {
-  actualConsumerTestCode().catch(e => {
+  actualConsumerTestCode(optionalNumber, optionalDnaPath).catch(e => {
     console.error("actual consumer test rejected!")
     console.error(e)
   })
