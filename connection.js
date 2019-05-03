@@ -1,4 +1,4 @@
-const { main } = require('./index')
+const { spawnConductors } = require('./index')
 const Config = require('./config')
 const { connect } = require('@holochain/hc-web-client')
 
@@ -24,11 +24,13 @@ class ConductorHandle {
         }
       }
 
-      connect(`ws://localhost:${this.adminPort}`).then(async ({ call, close, ws }) => {
+      console.info("Starting initialization...")
 
+      connect(`ws://localhost:${this.adminPort}`).then(async ({ call, close, ws }) => {
         console.log('we connected to admin socket')
         this.callAdmin = call
         this.adminWs = ws
+        console.info("Creating agent...")
         const result = await this.createAgent()
         console.log('create agent result: ', result)
         areWeDoneYet()
@@ -86,7 +88,14 @@ class ConductorHandle {
   }
 
   onSignal(fn) {
-    this.instanceWs.socket.on('message', fn) 
+    this.instanceWs.socket.on('message', rawMessage => {
+      const msg = JSON.parse(rawMessage)
+      const isInternal = msg.signal && msg.signal.signal_type === 'Internal'
+      if (isInternal) {
+        const {action} = msg.signal
+        fn(action)
+      }
+    })
   }
 
   shutdown() {
@@ -96,11 +105,13 @@ class ConductorHandle {
 
 class ConductorCluster {
   constructor(numConductors) {
-    const conductorsArray = main(numConductors)
-    this.conductors = conductorsArray.map(conductorInfo => new ConductorHandle(conductorInfo))
+    this.numConductors = numConductors
   }
 
-  initialize() {
+  async initialize() {
+    const conductorsArray = await spawnConductors(this.numConductors)
+    console.log('spawnConductors completed')
+    this.conductors = conductorsArray.map(conductorInfo => new ConductorHandle(conductorInfo))
     return Promise.all(this.conductors.map(conductor => conductor.initialize()))
   }
 
@@ -120,49 +131,17 @@ const actualConsumerTestCode = async () => {
   const cluster = new ConductorCluster(numConductors)
 
   await cluster.initialize()
+
+  console.log('initialized')
+
   await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
 
-  const conductor0 = cluster.conductors[0]
+  console.log('created DNA instances')
 
-  // {
-  //   "signal": {
-  //     "signal_type": "Internal",
-  //     "action": {
-  //       "action_type": "SignalZomeFunctionCall",
-  //       "data": {
-  //         "id": {
-  //           "prefix": 6,
-  //           "offset": 1
-  //         },
-  //         "zome_name": "blog",
-  //         "cap": {
-  //           "cap_token": "QmNgk3cWLXhTSkJw4Gh4up5kHt2o1hvJ8ypH2J34eF5ahe",
-  //           "provenance": [
-  //             "HcScinEyDXGmq6cwaqg9Q794tMtobRs5jRoZxenj8kexawjgEq4YVV8RbThcqnr",
-  //             "Gq2Q/vbV7PIGb3oH/UEjBCWkzbOCfJuWzQDssq+0TZnZ+Vf5+FvYk7Qs4jVqlVf1rUSYKzWjgVAH7aU1NqVcAw=="
-  //           ]
-  //         },
-  //         "fn_name": "create_post",
-  //         "parameters": "{\"content\":\"hi\"}"
-  //       }
-  //     },
-  //     "id": {
-  //       "prefix": 6,
-  //       "offset": 2
-  //     }
-  //   },
-  //   "instance_id": "app-spec"
-  // }
-  conductor0.onSignal((rawMessage) => {
-    const msg = JSON.parse(rawMessage)
-    const isInternal = msg.signal && msg.signal.signal_type === 'Internal'
-    if (isInternal) {
-      const {action} = msg.signal
-      console.log("got internal signal:", action)
-    }
-  })
+  // log all signals for all conductors
+  cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, signal)))
 
-  await conductor0.callZome(instanceId, 'blog', 'create_post')({
+  await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
     content: 'hi'
   })
 
@@ -184,3 +163,34 @@ try {
   console.error("actual consumer test failed!")
   console.error(e)
 }
+
+
+// {
+//   "signal": {
+//     "signal_type": "Internal",
+//     "action": {
+//       "action_type": "SignalZomeFunctionCall",
+//       "data": {
+//         "id": {
+//           "prefix": 6,
+//           "offset": 1
+//         },
+//         "zome_name": "blog",
+//         "cap": {
+//           "cap_token": "QmNgk3cWLXhTSkJw4Gh4up5kHt2o1hvJ8ypH2J34eF5ahe",
+//           "provenance": [
+//             "HcScinEyDXGmq6cwaqg9Q794tMtobRs5jRoZxenj8kexawjgEq4YVV8RbThcqnr",
+//             "Gq2Q/vbV7PIGb3oH/UEjBCWkzbOCfJuWzQDssq+0TZnZ+Vf5+FvYk7Qs4jVqlVf1rUSYKzWjgVAH7aU1NqVcAw=="
+//           ]
+//         },
+//         "fn_name": "create_post",
+//         "parameters": "{\"content\":\"hi\"}"
+//       }
+//     },
+//     "id": {
+//       "prefix": 6,
+//       "offset": 2
+//     }
+//   },
+//   "instance_id": "app-spec"
+// }

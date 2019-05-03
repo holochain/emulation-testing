@@ -1,10 +1,10 @@
-const shell = require('shelljs')
+const child_process = require('child_process')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const Config = require('./config')
 
-const genConfig = (index) => {
+const genConfig = (index, tmpPath) => {
 
   const adminPort = 3000 + index
   const instancePort = 4000 + index
@@ -32,33 +32,55 @@ instances = []
 
 [logger]
 type = "debug"
-    `
 
-    // [network]
-    // bootstrap_nodes = []
+[network]
+n3h_log_level = "i"
+bootstrap_nodes = []
+n3h_persistence_path = "${tmpPath}"
+    `
 
   return { config, adminPort, instancePort }
 }
 
 
 
-const main = (numberOfConductors) => {
+const spawnConductors = (numberOfConductors) => new Promise(resolve => {
   const conductors = []
+  let starts = 0
   for (let i = 0; i < numberOfConductors; i++) {
     const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'n3h-test-conductors-'))
-    fs.mkdirSync(tmpPath, {recursive: true})
+    const n3hPath = path.join(tmpPath, 'n3h-storage')
+    fs.mkdirSync(n3hPath)
     const configPath = path.join(tmpPath, `empty-conductor-${i}.toml`)
 
-    const {config, adminPort, instancePort} = genConfig(i)
+    const {config, adminPort, instancePort} = genConfig(i, n3hPath)
 
     fs.writeFileSync(configPath, config)
+
+    console.info("Spawning conductor processes...")
+
+    const handle = child_process.spawn(`holochain`, ['-c', configPath])
+
+    handle.stdout.on('data', data => {
+      const line = data.toString('utf8')
+      console.log(`[C${i}]`, line)
+      if (line.indexOf('Starting interfaces...') >= 0) {
+        starts += 1
+        if (starts === numberOfConductors) {
+          resolve(conductors)
+        }
+      }
+    })
+    handle.stderr.on('data', data => console.error(`!C${i}!`, data.toString('utf8')))
+    handle.on('close', code => console.log(`conductor ${i} exited with code`, code))
+
+    console.info("Conductor process spawning successful")
 
     conductors.push({
       adminPort,
       instancePort,
-      handle: shell.exec(`holochain -c ${configPath}`, { async: true })
+      handle
     })
   }
-  return conductors
-}
-module.exports.main = main
+})
+module.exports.spawnConductors = spawnConductors
