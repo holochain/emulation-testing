@@ -13,6 +13,8 @@ node simulation.js 4
 
 ## Current Status: Zome error in App Spec
 
+We are currently blocked.
+
 We are wondering why we are getting the following back from our call to `create_post` of the `app_spec` DNA: `Signature of entry QmWY98zemN4Mi9A9SgmC8vQufaQUf5a13Xe81PfWDvvnn9 from author HcSCIvEzcZubrc3bcazGppc4Ep9Jbattn8m9V3MzPfzTon9g3QXPZQIBGquqqar invalid`
 
 ```json
