@@ -1,5 +1,7 @@
 # simulation-testing
 
+Make sure you run `npm install`
+
 This code assumes an installed version of Holochain (`holochain` binary) available on the path
 
 The version of Holochain that will currently work with everything here, is the branch [rust-conductor-testing](https://github.com/holochain/holochain-rust/pull/1334) of holochain-rust
