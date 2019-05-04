@@ -11,6 +11,8 @@ Optionally, you can give it an argument, with the number of Conductors to start,
 node simulation.js 4
 ```
 
+See some example simulation logs. P.s. I don't recommend running with 10 nodes on 1 device, unless it is has 32 or 64 GB of RAM and oodles of cores.
+
 ## Current Status: Zome error in App Spec
 
 We are currently blocked.
