@@ -12,6 +12,7 @@ node simulation.js 4
 ```
 
 See some example simulation logs. P.s. I don't recommend running with 10 nodes on 1 device, unless it is has 32 or 64 GB of RAM and oodles of cores.
+https://gist.github.com/Connoropolous/5b6b61922370fe378a1e7473918406cc
 
 ## Current Status: Zome error in App Spec
 
