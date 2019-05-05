@@ -59,7 +59,7 @@ class ConductorHandle {
     ///         For test agents only. NOT SECURE!
     ///     Returns the agent public key
 
-    return this.callAdmin('admin/agent/add')({ id: this.agentId, name: this.agentName, passphrase: "eh?" })
+    return this.callAdmin('test/agent/add')({ id: this.agentId, name: this.agentName })
   }
 
   async createDnaInstance(instanceId, dnaPath) {
