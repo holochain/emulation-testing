@@ -59,7 +59,8 @@ class ConductorHandle {
     ///         For test agents only. NOT SECURE!
     ///     Returns the agent public key
 
-    return this.callAdmin('admin/agent/add')({ id: this.agentId, name: this.agentName, passphrase: "eh?" })
+    // return this.callAdmin('admin/agent/add')({ id: this.agentId, name: this.agentName, passphrase: "eh?" })
+    return this.callAdmin('test/agent/add')({ id: this.agentId, name: this.agentName })
   }
 
   async createDnaInstance(instanceId, dnaPath) {
@@ -143,9 +144,9 @@ const actualConsumerTestCode = async (numConductors = 2, dnaPath = './app_spec.d
     in_reply_to: null,
   })
 
-  
+
   // const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_posts')({}))
-  
+
 
   console.log('done')
 

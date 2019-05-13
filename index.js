@@ -49,8 +49,9 @@ const spawnConductors = (numberOfConductors) => new Promise(resolve => {
   let starts = 0
   for (let i = 0; i < numberOfConductors; i++) {
     const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'n3h-test-conductors-'))
+    // const tmpPath = (path.join(os.tmpdir(), 'debug'))
     const n3hPath = path.join(tmpPath, 'n3h-storage')
-    fs.mkdirSync(n3hPath)
+    fs.mkdirSync(n3hPath, {recursive: true})
     const configPath = path.join(tmpPath, `empty-conductor-${i}.toml`)
 
     const {config, adminPort, instancePort} = genConfig(i, n3hPath)
