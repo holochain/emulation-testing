@@ -20,4 +20,4 @@ jobs: # a basic unit of work in a run
       - run:
           name: Launch Nix Shell
           command:  nix-shell ./holochain-rust/default.nix \
-            ls
+            ls \
