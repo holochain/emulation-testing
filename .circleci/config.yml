@@ -6,6 +6,15 @@ jobs: # a basic unit of work in a run
     steps: # a series of commands to run
       - checkout  # pull down code from your version control system.
       - run:
-          # run our tests using xcode's cli tool `xcodebuild`
           name: Log Dir
           command: ls
+      - run:
+          name: Install Nix
+          command: curl https://nixos.org/nix/install | sh
+      - run:
+          name: Clone Holochain Rust
+          command:  git clone https://github.com/holochain/holochain-rust.git
+      - run:
+          name: Launch Nix Shell
+          command:  nix-shell ./holochain-rust/default.nix \
+            ls
