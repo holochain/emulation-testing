@@ -16,4 +16,4 @@ jobs: # a basic unit of work in a run
           command:  git clone --depth=1 https://github.com/holochain/holochain-rust.git
       - run:
           name: Launch Nix Shell
-          command:  cat /Users/distiller/.nix-profile/etc/profile.d/nix.sh
+          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh
