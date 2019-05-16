@@ -9,14 +9,18 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
   // log all signals for all conductors
   cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
 
+  console.log('before create_post')
   const postResult = await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
     content: 'hi',
     in_reply_to: null,
   })
+  console.log('after create_post')
   const getPostInput = {
     post_address: JSON.parse(postResult).Ok
   }
+  console.log('before get_post')
   const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
+  console.log('after get_post')
 
   console.log('results', results)
 
