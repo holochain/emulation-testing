@@ -13,7 +13,4 @@ jobs: # a basic unit of work in a run
           command: curl https://nixos.org/nix/install | sh
       - run:
           name: Launch Nix Shell
-          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain
-      - run:
-          name: Try Holochain
-          command:  holochain -V
+          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && holochain -V
