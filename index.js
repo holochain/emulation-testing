@@ -24,6 +24,7 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
       t.equal(1, 2)
       t.end()
   })
+  process.exit()
 }
 
 // first argument is the number of nodes to run
