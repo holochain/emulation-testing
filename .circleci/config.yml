@@ -10,4 +10,4 @@ jobs: # a basic unit of work in a run
           command: curl https://nixos.org/nix/install | sh
       - run:
           name: Run Emulation Test
-          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && npm install && npm start
+          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && npm install && npm test
