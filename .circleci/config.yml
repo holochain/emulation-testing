@@ -12,8 +12,5 @@ jobs: # a basic unit of work in a run
           name: Install Nix
           command: curl https://nixos.org/nix/install | sh
       - run:
-          name: Clone Holochain Rust
-          command:  git clone --depth=1 https://github.com/holochain/holochain-rust.git
-      - run:
           name: Launch Nix Shell
-          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-shell ./holochain-rust/default.nix --run hc-conductor-rust-install
+          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain
