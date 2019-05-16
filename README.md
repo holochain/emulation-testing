@@ -1,4 +1,4 @@
-# simulation-testing
+# emulation-testing
 
 Make sure you run `npm install`
 
