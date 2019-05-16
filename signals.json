@@ -1,0 +1,29 @@
+{
+    "signal": {
+        "signal_type": "Internal",
+        "action": {
+            "action_type": "SignalZomeFunctionCall",
+            "data": {
+                "id": {
+                    "prefix": 6,
+                    "offset": 1
+                },
+                "zome_name": "blog",
+                "cap": {
+                    "cap_token": "QmNgk3cWLXhTSkJw4Gh4up5kHt2o1hvJ8ypH2J34eF5ahe",
+                    "provenance": [
+                        "HcScinEyDXGmq6cwaqg9Q794tMtobRs5jRoZxenj8kexawjgEq4YVV8RbThcqnr",
+                        "Gq2Q/vbV7PIGb3oH/UEjBCWkzbOCfJuWzQDssq+0TZnZ+Vf5+FvYk7Qs4jVqlVf1rUSYKzWjgVAH7aU1NqVcAw=="
+                    ]
+                },
+                "fn_name": "create_post",
+                "parameters": "{\"content\":\"hi\"}"
+            }
+        },
+        "id": {
+            "prefix": 6,
+            "offset": 2
+        }
+    },
+    "instance_id": "app-spec"
+}

@@ -6,11 +6,12 @@ This code assumes an installed version of Holochain (`holochain` binary) availab
 
 This code should be compatible as of now with the `develop` branch of [holochain-rust](https://github.com/holochain/holochain-rust).
 
-Then, run `node emulation.js`
+Then, run `node index.js`
 
 Optionally, you can give it an argument, with the number of Conductors to start, like:
+(default is 2)
 ```
-node emulation.js 4
+node index.js 4
 ```
 
 See some example simulation logs. P.s. I don't recommend running with 10 nodes on 1 device, unless it is has 32 or 64 GB of RAM and oodles of cores.

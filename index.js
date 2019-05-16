@@ -1,98 +1,34 @@
-const child_process = require('child_process')
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const Config = require('./config')
+const test = require('tape')
+const { ConductorCluster } = require('./emulation')
 
-const genConfig = (index, tmpPath) => {
+const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', instanceId = 'app-spec') => {
+  const cluster = new ConductorCluster(numConductors)
+  await cluster.initialize()
+  await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
 
-  const adminPort = 3000 + index
-  const instancePort = 4000 + index
+  // log all signals for all conductors
+  cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
 
-  const config = `
-agents = []
-dnas = []
-instances = []
+  const postResult = await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
+    content: 'hi',
+    in_reply_to: null,
+  })
+  const getPostInput = {
+    post_address: JSON.parse(postResult).Ok
+  }
+  const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
 
-[[interfaces]]
-admin = true
-id = "${Config.adminInterfaceId}"
-instances = []
-    [interfaces.driver]
-    type = "websocket"
-    port = ${adminPort}
+  console.log('results', results)
 
-[[interfaces]]
-admin = true
-id = "${Config.dnaInterfaceId}"
-instances = []
-    [interfaces.driver]
-    type = "websocket"
-    port = ${instancePort}
-
-[logger]
-type = "debug"
-
-[network]
-n3h_log_level = "i"
-bootstrap_nodes = []
-n3h_persistence_path = "${tmpPath}"
-    `
-
-  return { config, adminPort, instancePort }
-}
-
-
-
-const spawnConductor = i => {
-  const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'n3h-test-conductors-'))
-  const n3hPath = path.join(tmpPath, 'n3h-storage')
-  fs.mkdirSync(n3hPath)
-  const configPath = path.join(tmpPath, `empty-conductor-${i}.toml`)
-
-  const { config, adminPort, instancePort } = genConfig(i, n3hPath)
-
-  fs.writeFileSync(configPath, config)
-
-  console.info(`Spawning conductor${i} process...`)
-
-  const handle = child_process.spawn(`holochain`, ['-c', configPath])
-
-  handle.stdout.on('data', data => console.log(`[C${i}]`, data.toString('utf8')))
-  handle.stderr.on('data', data => console.error(`!C${i}!`, data.toString('utf8')))
-  handle.on('close', code => console.log(`conductor ${i} exited with code`, code))
-
-  console.info(`Conductor${i} process spawning successful`)
-
-  return new Promise((resolve) => {
-    handle.stdout.on('data', data => {
-      // wait for the logs to convey that the interfaces have started
-      // because the consumer of this function needs those interfaces
-      // to be started so that it can initiate, and form,
-      // the websocket connections
-      if (data.toString('utf8').indexOf('Starting interfaces...') >= 0) {
-        resolve({
-          adminPort,
-          instancePort,
-          handle
-        })
-      }
-    })
+  test('all nodes should be holding a copy now', function (t) {
+      t.equal(1, 2)
+      t.end()
   })
 }
 
+// first argument is the number of nodes to run
+const optionalNumber = process.argv[2]
 
-const spawnConductors = async (numberOfConductors) => {
-  const promises = []
-
-  // start the first conductor and
-  // wait for it, because it sets up n3h
-  const firstConductor = await spawnConductor(0)
-  promises.push(firstConductor)
-
-  for (let i = 1; i < numberOfConductors; i++) {
-    promises.push(spawnConductor(i))
-  }
-  return Promise.all(promises)
-}
-module.exports.spawnConductors = spawnConductors
+// second argument is a path to a DNA to run
+const optionalDnaPath = process.argv[3]
+scenarioTest(optionalNumber, optionalDnaPath)

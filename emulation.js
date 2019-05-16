@@ -1,4 +1,4 @@
-const { spawnConductors } = require('./index')
+const { spawnConductors } = require('./spawn_conductors')
 const Config = require('./config')
 const { connect } = require('@holochain/hc-web-client')
 
@@ -80,6 +80,7 @@ class ConductorHandle {
     this.handle.kill()
   }
 }
+module.exports.ConductorHandle = ConductorHandle
 
 class ConductorCluster {
   constructor(numConductors) {
@@ -101,80 +102,4 @@ class ConductorCluster {
 
   }
 }
-
-const actualConsumerTestCode = async (numConductors = 2, dnaPath = './app_spec.dna.json', instanceId = 'app-spec') => {
-  const cluster = new ConductorCluster(numConductors)
-
-  await cluster.initialize()
-
-  console.log('initialized')
-
-  await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
-
-  console.log('created DNA instances')
-
-  // log all signals for all conductors
-  cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
-
-  const postResult = await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
-    content: 'hi',
-    in_reply_to: null,
-  })
-
-  console.log('postResult', postResult)
-
-  const getPostInput = {
-    post_address: JSON.parse(postResult).Ok
-  }
-  console.log('getPostInput', getPostInput)
-  const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
-
-  console.log('results', results)
-
-  process.exit()
-
-  // t.ok(results.every(result => result.Ok.items.length === num))
-}
-
-const optionalNumber = process.argv[2]
-const optionalDnaPath = process.argv[3]
-try {
-  actualConsumerTestCode(optionalNumber, optionalDnaPath).catch(e => {
-    console.error("actual consumer test rejected!")
-    console.error(e)
-  })
-} catch (e) {
-  console.error("actual consumer test failed!")
-  console.error(e)
-}
-
-
-// {
-//   "signal": {
-//     "signal_type": "Internal",
-//     "action": {
-//       "action_type": "SignalZomeFunctionCall",
-//       "data": {
-//         "id": {
-//           "prefix": 6,
-//           "offset": 1
-//         },
-//         "zome_name": "blog",
-//         "cap": {
-//           "cap_token": "QmNgk3cWLXhTSkJw4Gh4up5kHt2o1hvJ8ypH2J34eF5ahe",
-//           "provenance": [
-//             "HcScinEyDXGmq6cwaqg9Q794tMtobRs5jRoZxenj8kexawjgEq4YVV8RbThcqnr",
-//             "Gq2Q/vbV7PIGb3oH/UEjBCWkzbOCfJuWzQDssq+0TZnZ+Vf5+FvYk7Qs4jVqlVf1rUSYKzWjgVAH7aU1NqVcAw=="
-//           ]
-//         },
-//         "fn_name": "create_post",
-//         "parameters": "{\"content\":\"hi\"}"
-//       }
-//     },
-//     "id": {
-//       "prefix": 6,
-//       "offset": 2
-//     }
-//   },
-//   "instance_id": "app-spec"
-// }
+module.exports.ConductorCluster = ConductorCluster
