@@ -7,10 +7,10 @@ jobs: # a basic unit of work in a run
       - checkout  # pull down code from your version control system.
       - run:
           name: Log Dir
-          command: ls
+          command: node -v
       - run:
           name: Install Nix
           command: curl https://nixos.org/nix/install | sh
       - run:
           name: Launch Nix Shell
-          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && holochain -V
+          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && npm install && node -v && npm start
