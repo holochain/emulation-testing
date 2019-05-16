@@ -36,6 +36,7 @@ type = "debug"
 [network]
 n3h_log_level = "i"
 bootstrap_nodes = []
+n3h_mode = "REAL"
 n3h_persistence_path = "${tmpPath}"
     `
 
