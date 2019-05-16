@@ -44,7 +44,7 @@ n3h_persistence_path = "${tmpPath}"
 
 
 
-const startConductor = i => {
+const spawnConductor = i => {
   const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'n3h-test-conductors-'))
   const n3hPath = path.join(tmpPath, 'n3h-storage')
   fs.mkdirSync(n3hPath)
