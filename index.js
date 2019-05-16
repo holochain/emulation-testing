@@ -23,7 +23,6 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
   test('all nodes should be holding a copy now', function (t) {
       t.equal(1, 2)
       t.end()
-      process.exit()
   })
 }
 
