@@ -6,7 +6,7 @@ This code assumes an installed version of Holochain (`holochain` binary) availab
 
 This code should be compatible as of now with the `develop` branch of [holochain-rust](https://github.com/holochain/holochain-rust).
 
-Then, run `node index.js`
+Then, run `node index.js`, or `npm test`
 
 Optionally, you can give it an argument, with the number of Conductors to start, like:
 (default is 2)

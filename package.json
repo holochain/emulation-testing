@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tape index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node index.js | faucet"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@holochain/hc-web-client": "^0.4.1",
+    "faucet": "0.0.1",
     "shelljs": "^0.8.3",
     "tape": "^4.10.1"
   }
