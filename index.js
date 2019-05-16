@@ -87,11 +87,11 @@ const spawnConductors = async (numberOfConductors) => {
 
   // start the first conductor and
   // wait for it, because it sets up n3h
-  const firstConductor = await startConductor(0)
+  const firstConductor = await spawnConductor(0)
   promises.push(firstConductor)
 
   for (let i = 1; i < numberOfConductors; i++) {
-    promises.push(startConductor(i))
+    promises.push(spawnConductor(i))
   }
   return Promise.all(promises)
 }
