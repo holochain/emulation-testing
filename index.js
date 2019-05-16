@@ -9,7 +9,7 @@ const genConfig = (index, tmpPath) => {
   const adminPort = 3000 + index
   const instancePort = 4000 + index
 
-  const config =  `
+  const config = `
 agents = []
 dnas = []
 instances = []
@@ -53,7 +53,7 @@ const spawnConductors = (numberOfConductors) => new Promise(resolve => {
     fs.mkdirSync(n3hPath)
     const configPath = path.join(tmpPath, `empty-conductor-${i}.toml`)
 
-    const {config, adminPort, instancePort} = genConfig(i, n3hPath)
+    const { config, adminPort, instancePort } = genConfig(i, n3hPath)
 
     fs.writeFileSync(configPath, config)
 

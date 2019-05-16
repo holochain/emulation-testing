@@ -70,7 +70,7 @@ class ConductorHandle {
       const msg = JSON.parse(rawMessage)
       const isInternal = msg.signal && msg.signal.signal_type === 'Internal'
       if (isInternal) {
-        const {action} = msg.signal
+        const { action } = msg.signal
         fn(action)
       }
     })
@@ -121,11 +121,13 @@ const actualConsumerTestCode = async (numConductors = 2, dnaPath = './app_spec.d
     in_reply_to: null,
   })
 
-  
-  // const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_posts')({}))
-  
 
-  console.log('done')
+  const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_posts')({}))
+
+
+  console.log('results', results)
+
+  process.exit()
 
   // t.ok(results.every(result => result.Ok.items.length === num))
 }

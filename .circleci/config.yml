@@ -6,11 +6,8 @@ jobs: # a basic unit of work in a run
     steps: # a series of commands to run
       - checkout  # pull down code from your version control system.
       - run:
-          name: Log Dir
-          command: node -v
-      - run:
           name: Install Nix
           command: curl https://nixos.org/nix/install | sh
       - run:
-          name: Launch Nix Shell
-          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && npm install && node -v && npm start
+          name: Run Emulation Test
+          command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && npm install && npm start
