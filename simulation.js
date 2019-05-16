@@ -17,48 +17,26 @@ class ConductorHandle {
 
   initialize() {
     return new Promise((resolve, reject) => {
-      let count = 0
-      const areWeDoneYet = () => {
-        if (++count === 2) {
-          resolve()
-        }
-      }
-
       console.info("Starting initialization...")
 
-      connect(`ws://localhost:${this.adminPort}`).then(async ({ call, close, ws }) => {
-        console.log('connection opened to admin websocket')
-        this.callAdmin = call
-        this.adminWs = ws
-        console.info("Creating agent...")
-        const result = await this.createAgent()
-        console.log('create agent result: ', result)
-        areWeDoneYet()
-      }).catch(reject)
-
-      connect(`ws://localhost:${this.instancePort}`).then(({ callZome, close, ws }) => {
-        this.callZome = callZome
-        this.instanceWs = ws
-        areWeDoneYet()
-      }).catch(reject)
+      Promise.all([
+        connect(`ws://localhost:${this.adminPort}`).then(async ({ call, close, ws }) => {
+          console.log('connection opened to admin websocket')
+          this.callAdmin = call
+          this.adminWs = ws
+          console.info("Creating agent...")
+          const result = await this.createAgent()
+          console.log('create agent result: ', result)
+        }),
+        connect(`ws://localhost:${this.instancePort}`).then(({ callZome, close, ws }) => {
+          this.callZome = callZome
+          this.instanceWs = ws
+        })
+      ]).then(resolve).catch(reject)
     })
   }
 
   createAgent() {
-
-    ///  * `admin/agent/add`
-    ///     Add an agent to the conductor configuration that can be used with instances.
-    ///     Params:
-    ///     * `id`: Handle of this agent configuration as used in the config / other function calls
-    ///     * `name`: Nickname of this agent configuration
-    ///     * `holo_remote_key`: [Option<String>] Create this agent from an existing keypair generated externally. Public key is passed as param.
-    ///         All signing calls will be redirected externally via the wormhole websocket.
-    ///         If this param is not provided the key generation will be handled by the conductor and signing done internally.
-    ///     * `passphrase`: [Option<String>] A clear text passphrase with which to encrypt the key_store.
-    ///         This prevents the running conductor from prompting for a password.
-    ///         For test agents only. NOT SECURE!
-    ///     Returns the agent public key
-
     return this.callAdmin('test/agent/add')({ id: this.agentId, name: this.agentName })
   }
 

@@ -20,31 +20,8 @@ https://gist.github.com/Connoropolous/5b6b61922370fe378a1e7473918406cc
 
 We are currently blocked.
 
-We are wondering why we are getting the following back from our call to `create_post` of the `app_spec` DNA: `Signature of entry QmWY98zemN4Mi9A9SgmC8vQufaQUf5a13Xe81PfWDvvnn9 from author HcSCIvEzcZubrc3bcazGppc4Ep9Jbattn8m9V3MzPfzTon9g3QXPZQIBGquqqar invalid`
+We are wondering why we are seeing the following back from our call to `create_post` of the `app_spec` DNA: 
 
-```json
-{
-  "action_type": "ReturnZomeFunctionResult",
-  "data": {
-    "call": {
-      "id": {
-        "prefix": 4,
-        "offset": 1
-      },
-      "zome_name": "blog",
-      "cap": {
-        "cap_token": "QmNgk3cWLXhTSkJw4Gh4up5kHt2o1hvJ8ypH2J34eF5ahe",
-        "provenance": [
-          "HcScj56HdRyy8Z3oegB5NeP76XzThf3xqFwDM6xODOyxoyj5EgcD7X3zume9wba",
-          "T5ynxOqk/HNeJguAthKuA2AveJS+uC8nU+HXYTHsZsP15p6v2RUqUMym/EhuL+1ZvPqgvuFL0chg67IAOo38Cg=="
-        ]
-      },
-      "fn_name": "create_post",
-      "parameters": "{\"content\":\"hi\",\"in_reply_to\":null}"
-    },
-    "result": {
-      "Ok": "{\"Err\":{\"Internal\":\"{\\\"kind\\\":{\\\"ValidationFailed\\\":\\\"Signature of entry QmWY98zemN4Mi9A9SgmC8vQufaQUf5a13Xe81PfWDvvnn9 from author HcSCIvEzcZubrc3bcazGppc4Ep9Jbattn8m9V3MzPfzTon9g3QXPZQIBGquqqar invalid\\\"},\\\"file\\\":\\\"core/src/nucleus/ribosome/runtime.rs\\\",\\\"line\\\":\\\"192\\\"}\"}}"
-    }
-  }
-}
-```
+thread '<unnamed>' panicked at 'Failed to instantiate module: Function("host module doesn\'t export function with name hc_grant_capability"
+
+We believe this is due to a mismatch between the version app_spec.dna.json was packaged on, and the version its being run on. 
