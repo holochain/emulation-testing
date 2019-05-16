@@ -124,7 +124,7 @@ const actualConsumerTestCode = async (numConductors = 2, dnaPath = './app_spec.d
   console.log('postResult', postResult)
 
   const getPostInput = {
-    post_address: postResult.Ok
+    post_address: JSON.parse(postResult).Ok
   }
   console.log('getPostInput', getPostInput)
   const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
