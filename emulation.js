@@ -116,14 +116,12 @@ const actualConsumerTestCode = async (numConductors = 2, dnaPath = './app_spec.d
   // log all signals for all conductors
   cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
 
-  await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
+  const post_result = await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
     content: 'hi',
     in_reply_to: null,
   })
 
-
-  const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_posts')({}))
-
+  const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')({ post_address: post_result.Ok }))
 
   console.log('results', results)
 
