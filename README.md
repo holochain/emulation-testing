@@ -1,5 +1,8 @@
 # emulation-testing
 
+Check out the results of different emulation tests on the CI:
+https://circleci.com/gh/holochain/emulation-testing
+
 Make sure you run `npm install`
 
 This code assumes an installed version of Holochain (`holochain` binary) available on the path
