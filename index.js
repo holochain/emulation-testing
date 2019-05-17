@@ -7,7 +7,7 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
   await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
 
   // log all signals for all conductors
-  cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
+  // cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
 
   const postResult = await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
     content: 'hi',
