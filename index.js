@@ -13,9 +13,11 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
     content: 'hi',
     in_reply_to: null,
   })
+  console.log('postResult', postResult)
   const getPostInput = {
     post_address: JSON.parse(postResult).Ok
   }
+  console.log(getPostInput)
   const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
 
   console.log('results', results)
