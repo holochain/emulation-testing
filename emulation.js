@@ -30,6 +30,7 @@ class ConductorHandle {
           console.log('create agent result: ', result)
         }),
         connect(`ws://localhost:${this.instancePort}`).then(({ callZome, close, ws }) => {
+          console.log('connection opened to instance websocket')
           this.callZome = callZome
           this.instanceWs = ws
         })
@@ -69,8 +70,8 @@ class ConductorHandle {
   onSignal(fn) {
     this.instanceWs.socket.on('message', rawMessage => {
       const msg = JSON.parse(rawMessage)
-      const isInternal = msg.signal && msg.signal.signal_type === 'Internal'
-      if (isInternal) {
+      const isTrace = msg.signal && msg.signal.signal_type === 'Trace'
+      if (isTrace) {
         const { action } = msg.signal
         fn(action)
       }

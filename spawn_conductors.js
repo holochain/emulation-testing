@@ -11,6 +11,7 @@ const genConfig = (index, debugging, tmpPath, n3hPath) => {
 
   const config = `
 persistence_dir = "${tmpPath}"
+expose_trace_signals = true
 agents = []
 dnas = []
 instances = []

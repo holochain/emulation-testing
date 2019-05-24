@@ -10,26 +10,35 @@ const scenarioTest = async (numConductors = 2, debugging = false, dnaPath = './a
   await cluster.initialize()
   await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
 
-  // log all signals for all conductors
-  // cluster.batch((c, i) => c.onSignal(signal => console.log(`conductor${i} signal:`, JSON.stringify(signal))))
+  let enteringShutdown = false
+  let countHolding = 0
+  cluster.batch((c, i) => c.onSignal(async signal => {
+    if (signal.action_type === "Hold") {
+      countHolding++
+    }
+    // 2 Holds for each nodes ... one for the App entry and one for a LinkAdd entry
+    if (countHolding === numConductors * 2 && !enteringShutdown) {
+      enteringShutdown = true
+      console.log('All nodes are successfully HOLDing all entries they should be.')
+      await cluster.shutdown()
+      process.exit() // success status code
+    }
+  }))
 
-  const postResult = await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
+  // calling this will trigger a flurry of actions/signals
+  // including the Hold actions related to the Commits this function
+  // invokes
+  await cluster.conductors[0].callZome(instanceId, 'blog', 'create_post')({
     content: 'hi',
     in_reply_to: null,
   })
-  const getPostInput = {
-    post_address: JSON.parse(postResult).Ok
-  }
-  const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
 
-  console.log('results', results)
-  await cluster.shutdown()
-
-  if (!results.every(res => JSON.parse(res).Ok)) {
-    process.exit(1)
-  } else {
-    process.exit()
-  }
+  setTimeout(async () => {
+    console.log('after 5 seconds, all nodes should be holding all entries and all links')
+    console.log(`There are only ${countHolding} after 5 seconds.`)
+    await cluster.shutdown()
+    process.exit(1) // failure status code
+  }, 5000)
 }
 
 // first argument is the number of nodes to run
