@@ -1,7 +1,12 @@
 const test = require('tape')
 const { ConductorCluster } = require('./emulation')
 
-const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', instanceId = 'app-spec') => {
+process.on('unhandledRejection', error => {
+  // Will print "unhandledRejection err is not defined"
+  console.log('unhandledRejection', error.message);
+})
+
+const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', instanceId = 'test-1') => {
   const cluster = new ConductorCluster(numConductors)
   await cluster.initialize()
   await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
@@ -13,14 +18,14 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
     content: 'hi',
     in_reply_to: null,
   })
-  console.log('postResult', postResult)
   const getPostInput = {
     post_address: JSON.parse(postResult).Ok
   }
-  console.log(getPostInput)
   const results = await cluster.batch(c => c.callZome(instanceId, 'blog', 'get_post')(getPostInput))
 
   console.log('results', results)
+  await cluster.shutdown()
+
   if (!results.every(res => JSON.parse(res).Ok)) {
     process.exit(1)
   } else {

@@ -1,6 +1,7 @@
 const { spawnConductors } = require('./spawn_conductors')
 const Config = require('./config')
 const { connect } = require('@holochain/hc-web-client')
+const kill = require('tree-kill')
 
 class ConductorHandle {
   constructor({ adminPort, instancePort, handle }) {
@@ -77,7 +78,9 @@ class ConductorHandle {
   }
 
   shutdown() {
-    this.handle.kill()
+    return new Promise((resolve, reject) => {
+      kill(this.handle.pid, resolve)
+    })
   }
 }
 module.exports.ConductorHandle = ConductorHandle
@@ -99,7 +102,7 @@ class ConductorCluster {
   }
 
   shutdown() {
-
+    return this.batch(c => c.shutdown())
   }
 }
 module.exports.ConductorCluster = ConductorCluster

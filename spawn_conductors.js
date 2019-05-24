@@ -4,12 +4,13 @@ const os = require('os')
 const path = require('path')
 const Config = require('./config')
 
-const genConfig = (index, tmpPath) => {
+const genConfig = (index, tmpPath, n3hPath) => {
 
   const adminPort = 3000 + index
   const instancePort = 4000 + index
 
   const config = `
+persistence_dir = "${tmpPath}"
 agents = []
 dnas = []
 instances = []
@@ -37,13 +38,13 @@ type = "debug"
 n3h_log_level = "i"
 bootstrap_nodes = []
 n3h_mode = "REAL"
-n3h_persistence_path = "${tmpPath}"
+n3h_persistence_path = "${n3hPath}"
     `
 
   return { config, adminPort, instancePort }
 }
 
-
+const holochainBin = process.env.EMULATION_HOLOCHAIN_BIN_PATH
 
 const spawnConductor = i => {
   const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'n3h-test-conductors-'))
@@ -51,13 +52,12 @@ const spawnConductor = i => {
   fs.mkdirSync(n3hPath)
   const configPath = path.join(tmpPath, `empty-conductor-${i}.toml`)
 
-  const { config, adminPort, instancePort } = genConfig(i, n3hPath)
+  const { config, adminPort, instancePort } = genConfig(i, tmpPath, n3hPath)
 
   fs.writeFileSync(configPath, config)
 
   console.info(`Spawning conductor${i} process...`)
-
-  const handle = child_process.spawn(`holochain`, ['-c', configPath])
+  const handle = child_process.spawn(holochainBin, ['-c', configPath])
 
   handle.stdout.on('data', data => console.log(`[C${i}]`, data.toString('utf8')))
   handle.stderr.on('data', data => console.error(`!C${i}!`, data.toString('utf8')))

@@ -11,3 +11,5 @@ jobs: # a basic unit of work in a run
       - run:
           name: Run Emulation Test
           command:  . /Users/distiller/.nix-profile/etc/profile.d/nix.sh && nix-env -f https://holochain.love -iA holochain && npm install && npm test
+          environment:
+            EMULATION_HOLOCHAIN_BIN_PATH: holochain
