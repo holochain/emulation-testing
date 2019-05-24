@@ -5,8 +5,8 @@ process.on('unhandledRejection', error => {
   console.log('unhandledRejection', error.message);
 })
 
-const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', instanceId = 'test-1') => {
-  const cluster = new ConductorCluster(numConductors)
+const scenarioTest = async (numConductors = 2, debugging = false, dnaPath = './app_spec.dna.json', instanceId = 'test-1') => {
+  const cluster = new ConductorCluster(numConductors, { debugging })
   await cluster.initialize()
   await cluster.batch(conductor => conductor.createDnaInstance(instanceId, dnaPath))
 
@@ -35,6 +35,10 @@ const scenarioTest = async (numConductors = 2, dnaPath = './app_spec.dna.json', 
 // first argument is the number of nodes to run
 const optionalNumber = process.argv[2]
 
-// second argument is a path to a DNA to run
-const optionalDnaPath = process.argv[3]
-scenarioTest(optionalNumber, optionalDnaPath)
+// third argument is
+const optionalDebugging = process.argv[3]
+
+// third argument is a path to a DNA to run
+const optionalDnaPath = process.argv[4]
+
+scenarioTest(optionalNumber, optionalDebugging, optionalDnaPath)

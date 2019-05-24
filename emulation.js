@@ -86,12 +86,13 @@ class ConductorHandle {
 module.exports.ConductorHandle = ConductorHandle
 
 class ConductorCluster {
-  constructor(numConductors) {
+  constructor(numConductors, options = { debugging: false }) {
     this.numConductors = numConductors
+    this.options = options
   }
 
   async initialize() {
-    const conductorsArray = await spawnConductors(this.numConductors)
+    const conductorsArray = await spawnConductors(this.numConductors, this.options.debugging)
     console.log('spawnConductors completed')
     this.conductors = conductorsArray.map(conductorInfo => new ConductorHandle(conductorInfo))
     return Promise.all(this.conductors.map(conductor => conductor.initialize()))

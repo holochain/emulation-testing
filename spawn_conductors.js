@@ -4,7 +4,7 @@ const os = require('os')
 const path = require('path')
 const Config = require('./config')
 
-const genConfig = (index, tmpPath, n3hPath) => {
+const genConfig = (index, debugging, tmpPath, n3hPath) => {
 
   const adminPort = 3000 + index
   const instancePort = 4000 + index
@@ -33,9 +33,12 @@ instances = []
 
 [logger]
 type = "debug"
+${debugging ? '' : '[[logger.rules.rules]]'}
+${debugging ? '' : 'exclude = true'}
+${debugging ? '': 'pattern = "^debug"'}
 
 [network]
-n3h_log_level = "i"
+n3h_log_level = "${debugging ? 'i' : 'e'}"
 bootstrap_nodes = []
 n3h_mode = "REAL"
 n3h_persistence_path = "${n3hPath}"
@@ -46,13 +49,13 @@ n3h_persistence_path = "${n3hPath}"
 
 const holochainBin = process.env.EMULATION_HOLOCHAIN_BIN_PATH
 
-const spawnConductor = i => {
+const spawnConductor = (i, debugging) => {
   const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'n3h-test-conductors-'))
   const n3hPath = path.join(tmpPath, 'n3h-storage')
   fs.mkdirSync(n3hPath)
   const configPath = path.join(tmpPath, `empty-conductor-${i}.toml`)
 
-  const { config, adminPort, instancePort } = genConfig(i, tmpPath, n3hPath)
+  const { config, adminPort, instancePort } = genConfig(i, debugging, tmpPath, n3hPath)
 
   fs.writeFileSync(configPath, config)
 
@@ -83,16 +86,16 @@ const spawnConductor = i => {
 }
 
 
-const spawnConductors = async (numberOfConductors) => {
+const spawnConductors = async (numberOfConductors, debugging) => {
   const promises = []
 
   // start the first conductor and
   // wait for it, because it sets up n3h
-  const firstConductor = await spawnConductor(0)
+  const firstConductor = await spawnConductor(0, debugging)
   promises.push(firstConductor)
 
   for (let i = 1; i < numberOfConductors; i++) {
-    promises.push(spawnConductor(i))
+    promises.push(spawnConductor(i, debugging))
   }
   return Promise.all(promises)
 }

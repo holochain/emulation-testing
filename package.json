@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js 4"
+    "test": "node index.js 4 true"
   },
   "author": "",
   "license": "ISC",

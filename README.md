@@ -21,5 +21,11 @@ Optionally, you can give it an argument, with the number of Conductors to start,
 node index.js 4
 ```
 
+Optionally, you can give it a second argument, selecting whether to show debug logs, like:
+(default is false)
+```
+node index.js 4 true
+```
+
 See some example emulation logs. P.s. I don't recommend running with 10 nodes on 1 device, unless it is has 32 or 64 GB of RAM and oodles of cores.
 https://gist.github.com/Connoropolous/5b6b61922370fe378a1e7473918406cc
