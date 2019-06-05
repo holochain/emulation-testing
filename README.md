@@ -1,4 +1,6 @@
-# emulation-testing
+# Archived: The results of this work can be found in https://github.com/holochain/holochain-rust/tree/develop/hc_cluster_test
+
+## emulation-testing
 
 Check out the results of different emulation tests on the CI:
 https://circleci.com/gh/holochain/emulation-testing
